@@ -1,0 +1,9 @@
+#!/bin/bash
+GD="`cat /home/andrey/gamesdir`"
+
+if [ $2 == "m" ]; then
+ echo $1
+ mount -o loop -t squashfs ${GD}/"$1.fs" ${GD}/"$1"
+else 
+   umount ${GD}/"$1" 
+fi

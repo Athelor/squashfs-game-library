@@ -1,0 +1,49 @@
+#!/bin/bash
+
+gamesdir=`cat ~/gamesdir` # место размещения файлов
+cd ${gamesdir}
+if ! cat envs/game-list | awk ' {print $1} ' | grep $@  # запуск выбраной игры напрямую run-games $game-name
+    then
+    if ! ls /usr/bin/kdialog
+        then
+        sel=$(echo -n $(zenity --list \
+        --title="Выбери игру" \
+        --column="Игры" \
+        `cat envs/game-list | awk ' {print $1} '`))
+        else
+        sel=$(echo -n $(kdialog --combobox "Выбери игру" \
+        `cat envs/game-list | awk ' {print $1} '`))
+    fi
+    else
+    sel=$@
+fi
+game_name=` grep $sel envs/game-list | awk ' {print $1} '`
+game_bin=` grep $sel envs/game-list | awk ' {print $2} '`
+game_run=${game_bin}
+z=`grep $sel envs/game-list | awk ' {print $3} '`
+if test "$z" != ""
+	then
+	game_run=`grep $sel envs/game-list | awk ' {print $3} '`
+fi
+
+
+export LD_LIBRARY_PATH="`cat envs/LIB_${game_name} `:${LD_LIBRARY_PATH}"
+
+
+sudo /usr/local/bin/mounter ${game_name} m
+cd ${game_name}
+echo ${game_bin} " "   ${game_run} " " ${game_name}
+
+
+if ! ldd ${game_bin} | grep "not found"  
+	then
+	./${game_run}
+	else
+	sudo /usr/local/bin/mounter steam-runtime m
+	../steam-runtime/run.sh ./${game_run}
+	cd ${gamesdir}
+	sudo /usr/local/bin/mounter steam-runtime u
+fi
+cd ${gamesdir}
+sudo /usr/local/bin/mounter ${game_name} u
+

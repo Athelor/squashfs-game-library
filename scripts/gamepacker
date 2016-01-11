@@ -1,0 +1,15 @@
+#!/bin/bash
+dir="`kdialog --getexistingdirectory ~ `" 
+name="`echo ${dir} | sed "s/ /_/g"`"
+opts=""
+mksquashfs "${dir}" "${name}.fs" ${opts}
+ln -s "${name}.fs" "`cat ~/gamesdir`/`basename ${name}`.fs"
+mkdir "`cat ~/gamesdir`/`basename ${name}`"
+echo "`basename ${name}` `kdialog --title "Параметры игры" --inputbox "Имя исполняемогого файла и скрипта"`" >> "`cat ~/gamesdir`/envs/game-list"
+if ! kdialog --title "Сторонние библиотеки" --yesno " Сторонние библиотеки в папке с игрой отсутствуют"
+then
+echo "`kdialog --title "библиотеки игры" --inputbox "путь к внутренним библиотекам"`" > "`cat ~/gamesdir`/envs/LIB_`basename ${name}`"
+fi
+
+
+

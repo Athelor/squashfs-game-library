@@ -4,7 +4,7 @@ gamesdir=`cat ~/gamesdir` # место размещения файлов
 cd ${gamesdir}
 if ! cat envs/game-list | awk ' {print $1} ' | grep $@  # запуск выбраной игры напрямую run-games $game-name
     then
-    if ! ls /usr/bin/kdialog
+    if ! ls /usr/bin/kdialog # проверка наличия kdialog
         then
         sel=$(echo -n $(zenity --list \
         --title="Выбери игру" \
@@ -17,33 +17,33 @@ if ! cat envs/game-list | awk ' {print $1} ' | grep $@  # запуск выбр�
     else
     sel=$@
 fi
-game_name=` grep $sel envs/game-list | awk ' {print $1} '`
-game_bin=` grep $sel envs/game-list | awk ' {print $2} '`
+game_name=` grep $sel envs/game-list | awk ' {print $1} '` # задание имя игры (название папка и файла squashfs )
+game_bin=` grep $sel envs/game-list | awk ' {print $2} '`  # задание бинарного файла игры
 game_run=${game_bin}
-z=`grep $sel envs/game-list | awk ' {print $3} '`
-if test "$z" != ""
+z=`grep $sel envs/game-list | awk ' {print $3} '`		#задание скрипта запуска
+if test "$z" != ""						# проверка наличия скрипта запуска
 	then
 	game_run=`grep $sel envs/game-list | awk ' {print $3} '`
 fi
 
 
-export LD_LIBRARY_PATH="`cat envs/LIB_${game_name} `:${LD_LIBRARY_PATH}"
+export LD_LIBRARY_PATH="`cat envs/LIB_${game_name} `:${LD_LIBRARY_PATH}" 	# подключение внутренних библиотек игры
 
 
-sudo /usr/local/bin/mounter ${game_name} m
+sudo /usr/local/bin/mounter ${game_name} m				# монтирование squashfs игры
 cd ${game_name}
 echo ${game_bin} " "   ${game_run} " " ${game_name}
 
 
-if ! ldd ${game_bin} | grep "not found"  
+if ! ldd ${game_bin} | grep "not found"  				# проверка неоходимости подключения steam-runtime
 	then
 	./${game_run}
 	else
-	sudo /usr/local/bin/mounter steam-runtime m
+	sudo /usr/local/bin/mounter steam-runtime m			# подключение steam-runtime упакованного в squashfs
 	../steam-runtime/run.sh ./${game_run}
 	cd ${gamesdir}
-	sudo /usr/local/bin/mounter steam-runtime u
+	sudo /usr/local/bin/mounter steam-runtime u			# отключение steam-runtime
 fi
 cd ${gamesdir}
-sudo /usr/local/bin/mounter ${game_name} u
+sudo /usr/local/bin/mounter ${game_name} u				# размонтирование образа игры
 

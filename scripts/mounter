@@ -1,5 +1,5 @@
 #!/bin/bash
-GD="`cat /home/andrey/gamesdir`"
+GD="`cat /home/user/gamesdir`"
 
 if [ $2 == "m" ]; then
  echo $1

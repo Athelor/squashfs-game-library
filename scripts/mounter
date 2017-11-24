@@ -1,9 +1,16 @@
 #!/bin/bash
-GD="`cat /home/user/gamesdir`"
+GD="`cat ~/gamesdir`"
 
 if [ $2 == "m" ]; then
  echo $1
- mount -o loop -t squashfs ${GD}/"$1.fs" ${GD}/"$1"
+ mount -o loop -t squashfs "${GD}/$1.fs" "${GD}/layers/$1/data"
+ mount -t overlay overlay \
+-olowerdir=${GD}/layers/"$1"/data,\
+upperdir="${GD}/layers/$1/up",\
+workdir="${GD}/layers/$1/work"\
+ "${GD}/$1"
 else 
-   umount ${GD}/"$1" 
+   
+   umount -f "${GD}/$1"
+   umount -f "${GD}/layers/$1/data"
 fi

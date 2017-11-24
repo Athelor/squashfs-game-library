@@ -1,10 +1,26 @@
 #!/bin/bash
+#export mesa_glthread=true
+#export GALLIUM_HUD=fps
+#export MESA_GL_VERSION_OVERRIDE=4.1 MESA_GLSL_VERSION_OVERRIDE=410
+#export vblank_mode=0
+JAIL=1
+
+runjailed (){
+if [ ${JAIL} == 1  ];
+    then
+    firejail --profile="~/.config/firejail/firejail.profile" --net=none \
+    $1
+    else
+    $1
+fi
+}
+
 
 gamesdir=`cat ~/gamesdir` # место размещения файлов
 cd ${gamesdir}
 if ! cat envs/game-list | awk ' {print $1} ' | grep $@  # запуск выбраной игры напрямую run-games $game-name
     then
-    if ! ls /usr/bin/kdialog # проверка наличия kdialog
+    if ! ls /usr/bin/kdialog
         then
         sel=$(echo -n $(zenity --list \
         --title="Выбери игру" \
@@ -17,33 +33,34 @@ if ! cat envs/game-list | awk ' {print $1} ' | grep $@  # запуск выбр�
     else
     sel=$@
 fi
-game_name=` grep $sel envs/game-list | awk ' {print $1} '` # задание имя игры (название папка и файла squashfs )
-game_bin=` grep $sel envs/game-list | awk ' {print $2} '`  # задание бинарного файла игры
+game_name=` grep $sel envs/game-list | awk ' {print $1} '`
+game_bin=` grep $sel envs/game-list | awk ' {print $2} '`
 game_run=${game_bin}
-z=`grep $sel envs/game-list | awk ' {print $3} '`		#задание скрипта запуска
-if test "$z" != ""						# проверка наличия скрипта запуска
+z=`grep $sel envs/game-list | awk ' {print $3} '`
+if test "$z" != ""
 	then
 	game_run=`grep $sel envs/game-list | awk ' {print $3} '`
 fi
 
 
-export LD_LIBRARY_PATH="`cat envs/LIB_${game_name} `:${LD_LIBRARY_PATH}" 	# подключение внутренних библиотек игры
+export LD_LIBRARY_PATH="`cat envs/LIB_${game_name} `:${LD_LIBRARY_PATH}"
 
 
-sudo /usr/local/bin/mounter ${game_name} m				# монтирование squashfs игры
+sudo /usr/local/bin/mounter ${game_name} m
 cd ${game_name}
 echo ${game_bin} " "   ${game_run} " " ${game_name}
 
 
-if ! ldd ${game_bin} | grep "not found"  				# проверка неоходимости подключения steam-runtime
+if ! ldd ${game_bin} | grep "not found"  
 	then
-	./${game_run}
+	runjailed "./${game_run}"
 	else
-	sudo /usr/local/bin/mounter steam-runtime m			# подключение steam-runtime упакованного в squashfs
-	../steam-runtime/run.sh ./${game_run}
+	sudo /usr/local/bin/mounter steam-runtime m
+	find  ../steam-runtime \( -name "libgcc_s.so*" -o -name "libstdc++.so*" -o -name "libxcb.so*" -o -name "libgpg-error.so*" \) -print -delete
+	runjailed "../steam-runtime/run.sh ./${game_run}"
 	cd ${gamesdir}
-	sudo /usr/local/bin/mounter steam-runtime u			# отключение steam-runtime
+	sudo /usr/local/bin/mounter steam-runtime u
 fi
 cd ${gamesdir}
-sudo /usr/local/bin/mounter ${game_name} u				# размонтирование образа игры
+sudo /usr/local/bin/mounter ${game_name} u
 

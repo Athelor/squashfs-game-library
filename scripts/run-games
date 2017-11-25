@@ -25,7 +25,7 @@ if [ -f "~/gamesdir" ]
 	--title="Первый запуск" \
 	--text="Введите путь к папке где будут размещатся игры" ))
 	echo $dist > ~/gamesdir
-	mkdir -p $dist $dist/envs
+	mkdir -p $dist $dist/envs $dist/layers
 	touch $dist/envs/game-list
 fi
 	

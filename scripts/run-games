@@ -1,9 +1,11 @@
 #!/bin/bash
+#VERESION=Z001
 #export mesa_glthread=true
 #export GALLIUM_HUD=fps
 #export MESA_GL_VERSION_OVERRIDE=4.1 MESA_GLSL_VERSION_OVERRIDE=410
 #export vblank_mode=0
-JAIL=1
+mounter=/usr/bin/mounter
+JAIL=0
 
 runjailed (){
 if [ ${JAIL} == 1  ];
@@ -15,21 +17,27 @@ if [ ${JAIL} == 1  ];
 fi
 }
 
+if [ -f "~/gamesdir" ]
+	then
+	gamesdir=`cat ~/gamesdir` # место размещения файлов
+	else
+	dist=$(echo -n $(zenity --entry \
+	--title="Первый запуск" \
+	--text="Введите путь к папке где будут размещатся игры" ))
+	echo $dist > ~/gamesdir
+	mkdir -p $dist $dist/envs
+	touch $dist/envs/game-list
+fi
+	
 
-gamesdir=`cat ~/gamesdir` # место размещения файлов
+
 cd ${gamesdir}
 if ! cat envs/game-list | awk ' {print $1} ' | grep $@  # запуск выбраной игры напрямую run-games $game-name
     then
-    if ! ls /usr/bin/kdialog
-        then
         sel=$(echo -n $(zenity --list \
         --title="Выбери игру" \
         --column="Игры" \
         `cat envs/game-list | awk ' {print $1} '`))
-        else
-        sel=$(echo -n $(kdialog --combobox "Выбери игру" \
-        `cat envs/game-list | awk ' {print $1} '`))
-    fi
     else
     sel=$@
 fi
@@ -46,7 +54,7 @@ fi
 export LD_LIBRARY_PATH="`cat envs/LIB_${game_name} `:${LD_LIBRARY_PATH}"
 
 
-sudo /usr/local/bin/mounter ${game_name} m
+sudo ${mounter} ${game_name} m
 cd ${game_name}
 echo ${game_bin} " "   ${game_run} " " ${game_name}
 
@@ -55,12 +63,14 @@ if ! ldd ${game_bin} | grep "not found"
 	then
 	runjailed "./${game_run}"
 	else
-	sudo /usr/local/bin/mounter steam-runtime m
+	sudo ${mounter} steam-runtime m
 	find  ../steam-runtime \( -name "libgcc_s.so*" -o -name "libstdc++.so*" -o -name "libxcb.so*" -o -name "libgpg-error.so*" \) -print -delete
 	runjailed "../steam-runtime/run.sh ./${game_run}"
 	cd ${gamesdir}
-	sudo /usr/local/bin/mounter steam-runtime u
+	sudo ${mounter} steam-runtime u
 fi
 cd ${gamesdir}
-sudo /usr/local/bin/mounter ${game_name} u
+sudo ${mounter} ${game_name} u
+
+
 

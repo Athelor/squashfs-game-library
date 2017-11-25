@@ -10,6 +10,6 @@ scripts/run-games   основная программа для запуска и
 
 mntsudo - пример строки в /etc/sudoers для scripts/mounter расположенного в /usr/bin<br>
 
-Файлы для установки - inst
+Файлы для установки - inst.tar
 
 

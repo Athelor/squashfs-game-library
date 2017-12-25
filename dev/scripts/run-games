@@ -1,22 +1,6 @@
 #!/bin/bash
-#VERESION=Y001
-#export mesa_glthread=true
-#export GALLIUM_HUD=fps
-#export MESA_GL_VERSION_OVERRIDE=4.1 MESA_GLSL_VERSION_OVERRIDE=410
-#export vblank_mode=0
+#VERESION=Y002
 mounter=/usr/bin/mounter
-JAIL=0
-
-runjailed (){
-if [ ${JAIL} == 1  ];
-    then
-    firejail --profile="~/.config/firejail/firejail.profile" --net=none \
-    $1
-    else
-    $1
-fi
-}
-echo 1
 if [ -f "/home/${USER}/gamesdir" ]
 	then
 	gamesdir=`cat /home/${USER}/gamesdir` # место размещения файлов
@@ -27,11 +11,25 @@ if [ -f "/home/${USER}/gamesdir" ]
 	echo $dist > /home/${USER}/gamesdir
 	mkdir -p $dist $dist/envs $dist/layers
 	touch $dist/envs/game-list
+	echo "JAIL=0" > $dist/envs/conf
+	echo "Jprofile='--noprofile'" >> $dist/envs/conf
+	echo "Jnet='--net=none'" >> $dist/envs/conf
+	
 fi
-echo 2	
 gamesdir="`cat /home/${USER}/gamesdir`"
 cd ${gamesdir}
-
+echo 1
+`cat envs/conf`
+runjailed (){
+if [ ${JAIL} == 1  ];
+    then
+    firejail ${Jprofile} ${Jnet} \
+    $1
+    else
+    $1
+fi
+}
+echo 2	
 if ! cat envs/game-list | awk ' {print $1} ' | grep "$@"  # запуск выбраной игры напрямую run-games $game-name
     then
 	echo "2.5"

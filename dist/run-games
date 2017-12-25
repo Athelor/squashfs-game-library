@@ -1,5 +1,5 @@
 #!/bin/bash
-#VERESION=Y002
+#VERESION=Y003
 mounter=/usr/bin/mounter
 if [ -f "/home/${USER}/gamesdir" ]
 	then
@@ -12,8 +12,8 @@ if [ -f "/home/${USER}/gamesdir" ]
 	mkdir -p $dist $dist/envs $dist/layers
 	touch $dist/envs/game-list
 	echo "JAIL=0" > $dist/envs/conf
-	echo "Jprofile='--noprofile'" >> $dist/envs/conf
-	echo "Jnet='--net=none'" >> $dist/envs/conf
+	echo "Jprofile=--noprofile" >> $dist/envs/conf
+	echo "Jnet=--net=none" >> $dist/envs/conf
 	
 fi
 gamesdir="`cat /home/${USER}/gamesdir`"

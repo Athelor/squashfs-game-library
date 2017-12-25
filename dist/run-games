@@ -1,5 +1,5 @@
 #!/bin/bash
-#VERESION=Z001
+#VERESION=Y001
 #export mesa_glthread=true
 #export GALLIUM_HUD=fps
 #export MESA_GL_VERSION_OVERRIDE=4.1 MESA_GLSL_VERSION_OVERRIDE=410
@@ -16,7 +16,7 @@ if [ ${JAIL} == 1  ];
     $1
 fi
 }
-
+echo 1
 if [ -f "/home/${USER}/gamesdir" ]
 	then
 	gamesdir=`cat /home/${USER}/gamesdir` # место размещения файлов
@@ -28,11 +28,13 @@ if [ -f "/home/${USER}/gamesdir" ]
 	mkdir -p $dist $dist/envs $dist/layers
 	touch $dist/envs/game-list
 fi
-	
-gamesdir=`cat /home/${USER}/gamesdir`
+echo 2	
+gamesdir="`cat /home/${USER}/gamesdir`"
 cd ${gamesdir}
-if ! cat envs/game-list | awk ' {print $1} ' | grep $@  # запуск выбраной игры напрямую run-games $game-name
+
+if ! cat envs/game-list | awk ' {print $1} ' | grep "$@"  # запуск выбраной игры напрямую run-games $game-name
     then
+	echo "2.5"
         sel=$(echo -n $(zenity --list \
         --title="Выбери игру" \
         --column="Игры" \
@@ -40,7 +42,12 @@ if ! cat envs/game-list | awk ' {print $1} ' | grep $@  # запуск выбр�
     else
     sel=$@
 fi
-
+echo 3
+if ! cat envs/game-list | awk ' {print $1} ' | grep $sel
+then
+exit 0
+fi
+echo 4
 game_name=` grep $sel envs/game-list | awk ' {print $1} '`
 game_bin=` grep $sel envs/game-list | awk ' {print $2} '`
 game_run=${game_bin}
@@ -49,7 +56,7 @@ if test "$z" != ""
 	then
 	game_run=`grep $sel envs/game-list | awk ' {print $3} '`
 fi
-
+echo 5
 
 export LD_LIBRARY_PATH="`cat envs/LIB_${game_name} `:${LD_LIBRARY_PATH}"
 
@@ -57,7 +64,7 @@ export LD_LIBRARY_PATH="`cat envs/LIB_${game_name} `:${LD_LIBRARY_PATH}"
 sudo ${mounter} ${game_name} m ${gamesdir}
 cd ${game_name}
 echo ${game_bin} " "   ${game_run} " " ${game_name}
-
+echo 6
 
 if ! ldd ${game_bin} | grep "not found"  
 	then
@@ -69,6 +76,8 @@ if ! ldd ${game_bin} | grep "not found"
 	cd ${gamesdir}
 	sudo ${mounter} steam-runtime u ${gamesdir}
 fi
+echo 7
 cd ${gamesdir}
+sleep 10
 sudo ${mounter} ${game_name} u ${gamesdir}
 

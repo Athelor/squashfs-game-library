@@ -1,0 +1,4 @@
+Список зависимостей: zenity, kdialog(для упаковки файлов), GNU make
+Установка: make install, Добавить пользователя в группу rungames
+Удаление: make uninstall
+

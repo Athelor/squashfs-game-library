@@ -1,0 +1,18 @@
+#!/bin/bash
+# строка запуска при монтировании: mounter "название игры" m 
+# строка запуска при размонтировании: mounter "название игры" u
+GD="`cat ~/gamesdir`"  # директория для монтированя
+
+if [ $2 == "m" ]; then
+ echo $1
+ mount -o loop -t squashfs "${GD}/$1.fs" "${GD}/layers/$1/data"
+ mount -t overlay overlay \
+-olowerdir=${GD}/layers/"$1"/data,\
+upperdir="${GD}/layers/$1/up",\
+workdir="${GD}/layers/$1/work"\
+ "${GD}/$1"
+else 
+   
+   umount -f "${GD}/$1"
+   umount -f "${GD}/layers/$1/data"
+fi

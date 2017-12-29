@@ -1,4 +1,4 @@
 Папка_для_монтирования исполняемый_бинарный_файл скрипт_запуска 
-Age.of.Wonders.III.Eternal.Lords AoW3Launcher AoW3Launcher.sh
-SpaceHulk Assets/game.x86_64 SpaceHulk.sh
-Divinity_Original_Sin_Enhanced_Edition game/EoCApp start.sh
+Age.of.Wonders.III.Eternal.Lords 1 AoW3Launcher AoW3Launcher.sh
+SpaceHulk 1 Assets/game.x86_64 SpaceHulk.sh
+Divinity_Original_Sin_Enhanced_Edition 0 game/EoCApp start.sh

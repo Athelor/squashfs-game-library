@@ -1,5 +1,5 @@
 #!/bin/bash
-#VERESION=Y003
+#VERESION=Y002
 mounter=/usr/bin/mounter
 if [ -f "/home/${USER}/gamesdir" ]
 	then
@@ -11,9 +11,8 @@ if [ -f "/home/${USER}/gamesdir" ]
 	echo $dist > /home/${USER}/gamesdir
 	mkdir -p $dist $dist/envs $dist/layers
 	touch $dist/envs/game-list
-	echo "JAIL=0" > $dist/envs/conf
-	echo "Jprofile=--noprofile" >> $dist/envs/conf
-	echo "Jnet=--net=none" >> $dist/envs/conf
+	echo "Jprofile='--noprofile'" >> $dist/envs/conf
+	echo "Jnet='--net=none'" >> $dist/envs/conf
 	
 fi
 gamesdir="`cat /home/${USER}/gamesdir`"
@@ -47,12 +46,13 @@ exit 0
 fi
 echo 4
 game_name=` grep $sel envs/game-list | awk ' {print $1} '`
-game_bin=` grep $sel envs/game-list | awk ' {print $2} '`
+JAIL=` grep $sel envs/game-list | awk ' {print $2} '`
+game_bin=` grep $sel envs/game-list | awk ' {print $3} '`
 game_run=${game_bin}
-z=`grep $sel envs/game-list | awk ' {print $3} '`
+z=`grep $sel envs/game-list | awk ' {print $4} '`
 if test "$z" != ""
 	then
-	game_run=`grep $sel envs/game-list | awk ' {print $3} '`
+	game_run=`grep $sel envs/game-list | awk ' {print $4} '`
 fi
 echo 5
 
@@ -76,6 +76,5 @@ if ! ldd ${game_bin} | grep "not found"
 fi
 echo 7
 cd ${gamesdir}
-sleep 10
 sudo ${mounter} ${game_name} u ${gamesdir}
 

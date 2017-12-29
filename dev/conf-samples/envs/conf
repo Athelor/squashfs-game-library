@@ -1,0 +1,3 @@
+export mesa_glthread=true
+Jprofile=--noprofile
+Jnet=--net=none

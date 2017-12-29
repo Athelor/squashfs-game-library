@@ -6,7 +6,8 @@ opts=" -comp lz4 -Xhc"
 mksquashfs "${dir}" "`cat ~/gamesdir`/${name}.fs" ${opts}
 #ln -s "${dir}/${name}.fs" "`cat ~/gamesdir`/${name}.fs"
 mkdir "`cat ~/gamesdir`/${name}" "`cat ~/gamesdir`/layers/${name}" "`cat ~/gamesdir`/layers/${name}"/{data,work,up}
-echo "${name} `kdialog --title "Параметры игры" --inputbox "Имя исполняемогого файла и скрипта"`" >> "`cat ~/gamesdir`/envs/game-list"
+echo "${name} `kdialog --title "Параметры игры" --inputbox "Изолированное окружение (1\0)"` `kdialog --title "Параметры игры" --inputbox "Имя исполняемогого файла и скрипта"`" >> "`cat 
+~/gamesdir`/envs/game-list"
 if ! kdialog --title "Сторонние библиотеки" --yesno " Сторонние библиотеки в папке с игрой отсутствуют"
 then
 echo "`kdialog --title "библиотеки игры" --inputbox "путь к внутренним библиотекам"`" > "`cat ~/gamesdir`/envs/LIB_${name}"

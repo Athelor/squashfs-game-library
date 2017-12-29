@@ -1,7 +1,5 @@
 #!/bin/bash
-# строка запуска при монтировании: mounter "название игры" m 
-# строка запуска при размонтировании: mounter "название игры" u
-GD="`cat ~/gamesdir`"  # директория для монтированя
+GD=$3
 
 if [ $2 == "m" ]; then
  echo $1
@@ -12,7 +10,10 @@ upperdir="${GD}/layers/$1/up",\
 workdir="${GD}/layers/$1/work"\
  "${GD}/$1"
 else 
-   
-   umount -f "${GD}/$1"
-   umount -f "${GD}/layers/$1/data"
+while mount | grep "${GD}/layers/$1/data"; do
+ umount -f "${GD}/$1"
+ umount -f "${GD}/layers/$1/data"
+ sleep 1
+done
+
 fi

@@ -1,5 +1,5 @@
 #!/bin/bash
-#VERESION=Y002
+#VERESION=Y003
 mounter=/usr/bin/mounter
 if [ -f "/home/${USER}/gamesdir" ]
 	then
@@ -11,9 +11,9 @@ if [ -f "/home/${USER}/gamesdir" ]
 	echo $dist > /home/${USER}/gamesdir
 	mkdir -p $dist $dist/envs $dist/layers
 	touch $dist/envs/game-list
-	echo "Jprofile='--noprofile'" >> $dist/envs/conf
-	echo "Jnet='--net=none'" >> $dist/envs/conf
-	
+	echo "export Jprofile='--noprofile'" >> $dist/envs/conf
+	echo "export Jnet='--net=none'" >> $dist/envs/conf
+	exit 0
 fi
 gamesdir="`cat /home/${USER}/gamesdir`"
 cd ${gamesdir}
@@ -33,11 +33,19 @@ if ! cat envs/game-list | awk ' {print $1} ' | grep "$@"  # запуск выб�
     then
 	echo "2.5"
         sel=$(echo -n $(zenity --list \
+        --width=600 --height=400 \
         --title="Выбери игру" \
         --column="Игры" \
-        `cat envs/game-list | awk ' {print $1} '`))
+        `cat envs/game-list | awk ' {print $1} '` \
+        "Добавить игру"))
     else
     sel=$@
+fi
+echo ${sel}
+if [[ ${sel} == "Добавить игру" ]]
+then 
+gamepacker
+exit 0
 fi
 echo 3
 if ! cat envs/game-list | awk ' {print $1} ' | grep $sel

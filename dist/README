@@ -1,4 +1,4 @@
-Список зависимостей: zenity, kdialog(для упаковки файлов), GNU make, firejail
+Список зависимостей: zenity, GNU make, firejail
 Установка: sudo make install, Добавить пользователя в группу rungames
 Удаление: sudo make uninstall
 
